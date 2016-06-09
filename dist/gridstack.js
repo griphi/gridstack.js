@@ -924,6 +924,12 @@
             return;
         }
         var height = this.grid.getGridHeight();
+
+        if (this.opts.rowsCount) {
+            this.container.attr('data-gs-current-height', this.opts.rowsCount);
+            height = this.opts.rowsCount;
+        }
+
         this.container.attr('data-gs-current-height', height);
         if (!this.opts.cellHeight) {
             return ;
