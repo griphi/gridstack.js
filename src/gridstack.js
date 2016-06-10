@@ -802,7 +802,7 @@
                         .unbind('drag', onDrag);
 
                     if (el.find('div.ui-resizable-handle').length > 0) {
-                        el.find('div.ui-resizable-handle').remove()
+                        el.find('div.ui-resizable-handle').remove();
                     }
 
                     self.container.append(el);
