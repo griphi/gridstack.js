@@ -520,9 +520,11 @@
             handleClass: null,
             cellHeight: 60,
             verticalMargin: 20,
+            minRowsCount: false,
             auto: true,
             minWidth: 768,
             float: false,
+            fixed: false,
             staticGrid: false,
             _class: 'grid-stack-instance-' + (Math.random() * 10000).toFixed(0),
             animate: Boolean(this.container.attr('data-gs-animate')) || false,
@@ -930,9 +932,12 @@
         }
         var height = this.grid.getGridHeight();
 
-        if (this.opts.rowsCount) {
-            this.container.attr('data-gs-current-height', this.opts.rowsCount);
-            height = this.opts.rowsCount;
+        if (this.opts.minRowsCount) {
+            if (this.opts.fixed) {
+                height = this.opts.minRowsCount;
+            } else {
+                height = height < this.opts.minRowsCount ? this.opts.minRowsCount : height;
+            }
         }
 
         this.container.attr('data-gs-current-height', height);
@@ -1037,6 +1042,10 @@
             if (!self.grid.canMoveNode(node, x, y, width, height)) {
                 return;
             }
+            if (y >= self.opts.minRowsCount && self.opts.fixed) {
+                return;
+            }
+
             self.grid.moveNode(node, x, y, width, height);
             self._updateContainerHeight();
         };
