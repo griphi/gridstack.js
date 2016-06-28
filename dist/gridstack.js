@@ -1000,6 +1000,9 @@
             if (event.type != 'drag') {
                 width = Math.round(ui.size.width / cellWidth);
                 height = Math.round(ui.size.height / cellHeight);
+                if (y + height > self.opts.minRowsCount) {
+                    height = self.opts.minRowsCount - y;
+                }
             }
 
             if (event.type == 'drag') {
@@ -1042,7 +1045,7 @@
             if (!self.grid.canMoveNode(node, x, y, width, height)) {
                 return;
             }
-            if (y >= self.opts.minRowsCount && self.opts.fixed) {
+            if ((y + node.height) >= self.opts.minRowsCount && self.opts.fixed) {
                 return;
             }
 
