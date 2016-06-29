@@ -1045,7 +1045,7 @@
             if (!self.grid.canMoveNode(node, x, y, width, height)) {
                 return;
             }
-            if ((y + node.height) >= self.opts.minRowsCount && self.opts.fixed) {
+            if ((y + node.height) > self.opts.minRowsCount && self.opts.fixed) {
                 return;
             }
 
