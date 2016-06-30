@@ -170,7 +170,7 @@
             if (typeof collisionNode == 'undefined') {
                 return;
             }
-            //out of border case:
+            // out of border case:
             if (node.height + node.y + collisionNode.height > opts.minRowsCount) {
                 return;
             }
