@@ -156,7 +156,7 @@
         return _.find(this.nodes, function(n) { return el.get(0) === n.el.get(0); });
     };
 
-    GridStackEngine.prototype._fixCollisions = function(node) {
+    GridStackEngine.prototype._fixCollisions = function(node, opts) {
         var self = this;
         this._sortNodes(-1);
 
@@ -170,8 +170,12 @@
             if (typeof collisionNode == 'undefined') {
                 return;
             }
+            //out of border case:
+            if (node.height + node.y + collisionNode.height > opts.minRowsCount) {
+                return;
+            }
             this.moveNode(collisionNode, collisionNode.x, node.y + node.height,
-                collisionNode.width, collisionNode.height, true);
+                collisionNode.width, collisionNode.height, true, opts);
         }
     };
 
@@ -402,7 +406,7 @@
         return clone.getGridHeight() <= this.height;
     };
 
-    GridStackEngine.prototype.moveNode = function(node, x, y, width, height, noPack) {
+    GridStackEngine.prototype.moveNode = function(node, x, y, width, height, noPack, opts) {
         if (typeof x != 'number') { x = node.x; }
         if (typeof y != 'number') { y = node.y; }
         if (typeof width != 'number') { width = node.width; }
@@ -427,7 +431,7 @@
 
         node = this._prepareNode(node, resizing);
 
-        this._fixCollisions(node);
+        this._fixCollisions(node, opts);
         if (!noPack) {
             this._packNodes();
             this._notify();
@@ -1049,7 +1053,7 @@
                 return;
             }
 
-            self.grid.moveNode(node, x, y, width, height);
+            self.grid.moveNode(node, x, y, width, height, undefined, self.opts);
             self._updateContainerHeight();
         };
 
