@@ -171,7 +171,7 @@
                 return;
             }
             // out of border case:
-            if (node.height + node.y + collisionNode.height > opts.minRowsCount) {
+            if (opts && node.height + node.y + collisionNode.height > opts.minRowsCount) {
                 return;
             }
             this.moveNode(collisionNode, collisionNode.x, node.y + node.height,
