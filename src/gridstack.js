@@ -466,7 +466,9 @@
 
         opts = opts || {};
 
-        this.container = $(el);
+        var wrapper = $(el);
+        this.container = wrapper.clone();
+        wrapper.append(this.container);
 
         // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
         if (typeof opts.handle_class !== 'undefined') {
@@ -514,6 +516,14 @@
         opts.itemClass = opts.itemClass || 'grid-stack-item';
         var isNested = this.container.closest('.' + opts.itemClass).size() > 0;
 
+        if (opts.columns) {
+            if (typeof opts.columns === 'number') {
+                opts.width = opts.columns;
+            } else if ($.isArray(opts.columns)) {
+                opts.width = opts.columns.length;
+            }
+        }
+
         this.opts = _.defaults(opts || {}, {
             width: parseInt(this.container.attr('data-gs-width')) || 12,
             height: parseInt(this.container.attr('data-gs-height')) || 0,
@@ -552,6 +562,10 @@
             cellHeightUnit: 'px'
         });
 
+        if (opts.columns) {
+            this._showColumnsHeader(this.container, opts.columns);
+        }
+
         if (this.opts.rtl === 'auto') {
             this.opts.rtl = this.container.css('direction') === 'rtl';
         }
@@ -559,6 +573,9 @@
         if (this.opts.rtl) {
             this.container.addClass('grid-stack-rtl');
         }
+
+        this.container.addClass('grid-stack');
+        this.container.addClass('grid-stack-' + opts.width);
 
         this.opts.isNested = isNested;
 
@@ -835,6 +852,22 @@
         if (hasChanges || forceTrigger === true) {
             this.container.trigger('change', eventParams);
         }
+    };
+
+    GridStack.prototype._showColumnsHeader = function (container, columns) {
+        var wrapper = $('<div style="height:20px; margin-bottom:5px"></div>');
+        var header  = $('<div></div>');
+
+        header.addClass('grid-stack');
+        header.addClass('grid-stack-' + columns.length);
+        wrapper.append(header);
+
+        columns.forEach(function (column, i) {
+            header.append('<div data-gs-width="1" data-gs-x="' + i + '" class="grid-stack-item">' +
+                          '<div class="text-center">' + column + '</div>')
+        });
+
+        wrapper.insertBefore(container);
     };
 
     GridStack.prototype._triggerAddEvent = function() {
