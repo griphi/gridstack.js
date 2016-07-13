@@ -122,12 +122,13 @@
 
     var idSeq = 0;
 
-    var GridStackEngine = function(width, onchange, floatMode, height, items) {
+    var GridStackEngine = function(width, onchange, floatMode, height, rowsCount) {
         this.width = width;
         this.float = floatMode || false;
         this.height = height || 0;
+        this.rowsCount = rowsCount || false;
 
-        this.nodes = items || [];
+        this.nodes = [];
         this.onchange = onchange || function() {};
 
         this._updateCounter = 0;
@@ -440,7 +441,9 @@
     };
 
     GridStackEngine.prototype.getGridHeight = function() {
-        return _.reduce(this.nodes, function(memo, n) { return Math.max(memo, n.y + n.height); }, 0);
+        return this.rowsCount ? this.rowsCount : _.reduce(this.nodes, function(memo, n) {
+            return Math.max(memo, n.y + n.height);
+        }, 1);
     };
 
     GridStackEngine.prototype.beginUpdate = function(node) {
@@ -461,12 +464,43 @@
     };
 
     var GridStack = function(el, opts) {
+        var createColumnTitles = function(columnTitles) {
+            var wrapper = $('<div style="height:20px; margin-bottom:5px"></div>');
+            var header  = $('<div></div>');
+
+            header.addClass('grid-stack');
+            header.addClass('grid-stack-' + columnTitles.length);
+            wrapper.append(header);
+
+            columnTitles.forEach(function(columnTitle, i) {
+                header.append('<div data-gs-width="1" data-gs-x="' + i + '" class="grid-stack-item">' +
+                              '<div class="text-center">' + columnTitle + '</div>');
+            });
+
+            return wrapper;
+        };
+
+        var createRowTitles = function(height, margin, rowTitles) {
+            var $container = $('<div></div>');
+            for (var i = 0; i < rowTitles.length; i++) {
+                var itemHeight = (height + margin) * i;
+                $container.append('<div style="top: ' + itemHeight + 'px; height:' + height +
+                                  'px" class="row-line"><div>' +
+                                  rowTitles[i] +
+                                  '</div></div>');
+            }
+
+            return $container;
+        };
+
         var self = this;
         var oneColumnMode, isAutoCellHeight;
 
         opts = opts || {};
 
-        this.container = $(el);
+        var wrapper = $(el);
+        this.container = wrapper.clone();
+        wrapper.append(this.container);
 
         // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
         if (typeof opts.handle_class !== 'undefined') {
@@ -524,7 +558,10 @@
             handleClass: null,
             cellHeight: 60,
             verticalMargin: 20,
-            minRowsCount: false,
+            rowsCount: false,
+            rowLines: false,
+            columnTitles: false,
+            rowTitles: false,
             auto: true,
             minWidth: 768,
             float: false,
@@ -552,6 +589,24 @@
             cellHeightUnit: 'px'
         });
 
+        if (opts.columnTitles && $.isArray(opts.columnTitles)) {
+            if (opts.columnTitles.length == opts.width) {
+                var $columnTittles = createColumnTitles(opts.columnTitles);
+                $columnTittles.insertBefore(this.container);
+            } else {
+                throw new Error('Column titles array length should be equal to width');
+            }
+        }
+
+        if (opts.rowTitles && $.isArray(opts.rowTitles) && opts.rowsCount) {
+            if (opts.rowTitles.length == opts.rowsCount) {
+                var $rowTitles = createRowTitles(opts.cellHeight, opts.verticalMargin, opts.rowTitles);
+                $rowTitles.insertBefore(this.container);
+            } else {
+                throw new Error('Row titles array length should be equal to rowsCount');
+            }
+        }
+
         if (this.opts.rtl === 'auto') {
             this.opts.rtl = this.container.css('direction') === 'rtl';
         }
@@ -571,6 +626,8 @@
         this.verticalMargin(this.opts.verticalMargin, true);
 
         this.container.addClass(this.opts._class);
+        this.container.addClass('grid-stack');
+        this.container.addClass('grid-stack-' + opts.width);
 
         this._setStaticClass();
 
@@ -597,7 +654,7 @@
                 }
             });
             self._updateStyles(maxHeight + 10);
-        }, this.opts.float, this.opts.height);
+        }, this.opts.float, this.opts.height, this.opts.rowsCount);
 
         if (this.opts.auto) {
             var elements = [];
@@ -935,14 +992,6 @@
             return;
         }
         var height = this.grid.getGridHeight();
-
-        if (this.opts.minRowsCount) {
-            if (this.opts.fixed) {
-                height = this.opts.minRowsCount;
-            } else {
-                height = height < this.opts.minRowsCount ? this.opts.minRowsCount : height;
-            }
-        }
 
         this.container.attr('data-gs-current-height', height);
         if (!this.opts.cellHeight) {
