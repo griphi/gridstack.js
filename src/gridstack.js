@@ -586,7 +586,8 @@
             removable: false,
             removeTimeout: 2000,
             verticalMarginUnit: 'px',
-            cellHeightUnit: 'px'
+            cellHeightUnit: 'px',
+            rowTitlesOffset: false
         });
 
         if (opts.columnTitles && $.isArray(opts.columnTitles)) {
@@ -604,6 +605,9 @@
                 $rowTitles.insertBefore(this.container);
             } else {
                 throw new Error('Row titles array length should be equal to rowsCount');
+            }
+            if (opts.rowTitlesOffset) {
+                this.container.css('margin-left', opts.rowTitlesOffset + 'px');
             }
         }
 
