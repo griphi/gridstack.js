@@ -485,7 +485,7 @@
             for (var i = 0; i < rowTitles.length; i++) {
                 var itemHeight = (height + margin) * i;
                 $container.append('<div style="top: ' + itemHeight + 'px; height:' + height +
-                                  'px" class="row-line"><div>' +
+                                  'px" class="grid-stack-row-line"><div>' +
                                   rowTitles[i] +
                                   '</div></div>');
             }
@@ -501,6 +501,7 @@
         var wrapper = $(el);
         this.container = wrapper.clone();
         wrapper.append(this.container);
+        wrapper.css('position', 'relative');
 
         // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
         if (typeof opts.handle_class !== 'undefined') {

@@ -13,6 +13,17 @@ $animation_speed: .3s !default;
 
 :root .grid-stack-item > .ui-resizable-handle { filter: none; }
 
+.grid-stack-row-line{
+    position: absolute;
+    left: 0;
+    width: 100%;
+    border: rgba(0, 0, 0, 0.15);
+    border-style: solid;
+    z-index: 1;
+    border-width: 1px 0;
+    margin-top: 25px
+}
+
 .grid-stack {
     position: relative;
 
