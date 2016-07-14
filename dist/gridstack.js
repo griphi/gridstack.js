@@ -172,7 +172,7 @@
                 return;
             }
             // out of border case:
-            if (opts && node.height + node.y + collisionNode.height > opts.minRowsCount) {
+            if (opts && opts.rowsCount && node.height + node.y + collisionNode.height > opts.rowsCount) {
                 return;
             }
             this.moveNode(collisionNode, collisionNode.x, node.y + node.height,
@@ -566,7 +566,6 @@
             auto: true,
             minWidth: 768,
             float: false,
-            fixed: false,
             staticGrid: false,
             _class: 'grid-stack-instance-' + (Math.random() * 10000).toFixed(0),
             animate: Boolean(this.container.attr('data-gs-animate')) || false,
@@ -1058,8 +1057,8 @@
             if (event.type != 'drag') {
                 width = Math.round(ui.size.width / cellWidth);
                 height = Math.round(ui.size.height / cellHeight);
-                if (y + height > self.opts.minRowsCount) {
-                    height = self.opts.minRowsCount - y;
+                if (self.opts.rowsCount && y + height > self.opts.rowsCount) {
+                    height = self.opts.rowsCount - y;
                 }
             }
 
@@ -1103,7 +1102,7 @@
             if (!self.grid.canMoveNode(node, x, y, width, height)) {
                 return;
             }
-            if ((y + node.height) > self.opts.minRowsCount && self.opts.fixed) {
+            if (self.opts.rowsCount && (y + node.height) > self.opts.rowsCount) {
                 return;
             }
 
