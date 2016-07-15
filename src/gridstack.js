@@ -171,12 +171,14 @@
             if (typeof collisionNode == 'undefined') {
                 return;
             }
+            var shift = 0;
             // out of border case:
             if (opts && opts.rowsCount && node.height + node.y + collisionNode.height > opts.rowsCount) {
-                return;
+                shift = node.y - collisionNode.height;
+            } else {
+                shift = node.y + node.height;
             }
-            this.moveNode(collisionNode, collisionNode.x, node.y + node.height,
-                collisionNode.width, collisionNode.height, true, opts);
+            this.moveNode(collisionNode, collisionNode.x, shift, collisionNode.width, collisionNode.height, true, opts);
         }
     };
 
@@ -560,7 +562,6 @@
             cellHeight: 60,
             verticalMargin: 20,
             rowsCount: false,
-            rowLines: false,
             columnTitles: false,
             rowTitles: false,
             auto: true,
@@ -594,8 +595,11 @@
             if (opts.columnTitles.length == opts.width) {
                 var $columnTittles = createColumnTitles(opts.columnTitles);
                 $columnTittles.insertBefore(this.container);
+                if (opts.rowTitlesOffset) {
+                    $columnTittles.css('margin-left', opts.rowTitlesOffset + 'px');
+                }
             } else {
-                throw new Error('Column titles array length should be equal to width');
+                throw 'Column titles array length should be equal to width';
             }
         }
 
@@ -604,7 +608,7 @@
                 var $rowTitles = createRowTitles(opts.cellHeight, opts.verticalMargin, opts.rowTitles);
                 $rowTitles.insertBefore(this.container);
             } else {
-                throw new Error('Row titles array length should be equal to rowsCount');
+                throw 'Row titles array length should be equal to rowsCount';
             }
             if (opts.rowTitlesOffset) {
                 this.container.css('margin-left', opts.rowTitlesOffset + 'px');
